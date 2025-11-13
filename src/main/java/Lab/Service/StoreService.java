@@ -5,6 +5,7 @@ import Lab.Repository.StoreRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.lang.StackWalker.Option;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,14 +21,14 @@ public class StoreService {
      * @return the persisted store
      */
     public Store persistStore(Store store){
-        return null;
+        return storeRepository.save(store);
     }
     /**
      * TODO: get all store entities
      * @return all store entities
      */
     public List<Store> getAllStores(){
-        return null;
+        return storeRepository.findAll();
     }
     /**
      * TODO: given an id of a store, return the store.
@@ -36,13 +37,15 @@ public class StoreService {
      * @return a store entity
      */
     public Store getStoreById(long id){
-        return null;
+        Optional<Store> Opt = storeRepository.findById(id);
+        return Opt.orElse(null);
     }
     /**
      * TODO: given an id of an existing store, delete the store
      */
     public void deleteStore(long id){
 //        code here
+        storeRepository.deleteById(id);
     }
     /**
      * TODO: given an id and some replacement data for a store, overwrite the data of an existing store,
@@ -50,7 +53,16 @@ public class StoreService {
      * @return the updated store entity
      */
     public Store updateStore(long id, Store replacement){
-        return null;
-    }
+        Optional<Store> existingOpt = storeRepository.findById(id);
+        if (existingOpt.isPresent()) {
+            Store existing = existingOpt.get();
 
+            existing.setName(replacement.getName());
+            existing.setAddress(replacement.getAddress());
+
+            return storeRepository.save(existing);
+        } else {
+            return null;
+        }
+    }
 }
